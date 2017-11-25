@@ -1,0 +1,142 @@
+<html>
+	<head>
+		<link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.3.3/jasmine.min.css">
+		<script src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.3.3/jasmine.min.js"></script>
+		<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.3.3/jasmine-html.min.js"></script>
+        <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/jasmine/2.3.3/boot.min.js"></script>
+        <script type="text/javascript" src="https://code.angularjs.org/1.4.0-rc.2/angular.min.js"></script>
+        <script type="text/javascript" src="https://code.angularjs.org/1.4.0-rc.2/angular-mocks.js"></script>
+	</head>
+	<body>
+        <div ng-controller="CalculatorController">
+            <input type="text" ng-model="CC.value1" />
+            <strong>{{CC.sum}}</strong>
+            <input type="button" ng-click="CC.rpn(CC.value1)" value="calculate">
+        </div>
+
+	</body>
+	<script type="text/javascript">
+
+		// Paste in the test code here.
+        angular.module('calculatorApp', []);
+        angular.module('calculatorApp').controller('CalculatorController', function CalculatorController($scope) {
+            var CC = $scope;
+            CC.value1 = 0;
+            CC.value2 = 0;
+            CC.sum = function(val1, val2) {
+                CC.sum = val1 + val2;
+            };
+            CC.rpn = function(input) {
+                var values = input.split(",");
+                CC.array = [];
+                for (i in values) {
+                    if (values[i] != "+" && values[i] != "*" && values[i] != "-" && values[i] != "/") {
+                        CC.array.push(parseInt(values[i]));
+                    } else {
+                        var operator = values[i];
+                        var val2 = CC.array.pop();
+                        var val1 = CC.array.pop();
+                        switch (operator) {
+                            case "+":
+                                CC.array.push(val1 + val2);
+                                break;
+                            case "*":
+                                CC.array.push(val1 * val2);
+                                break;
+                            case "-":
+                                CC.array.push(val1 - val2);
+                                break;
+                            case "/":
+                                CC.array.push(val1 / val2);
+                                break;
+                        }
+                    }
+                }
+                alert(CC.array);
+                return CC.array;
+            };
+		});
+        // var calculator = {
+        //     sum: function(x, y) {
+        //         return x+y; // <-- note this is hardcoded
+        //     },
+        //     divide: function(x, y) {
+        //         if(y === 0){
+        //             return 0;
+        //         } else {
+        //             return x/y;
+        //         }
+        //     }
+        // }
+        angular.element(document).ready(function() {
+   			angular.bootstrap(document, ['calculatorApp']);
+		});
+
+        
+        describe('calculator', function () {
+		
+            beforeEach(angular.mock.module('calculatorApp'));
+
+                var $controller;
+
+                beforeEach(angular.mock.inject(function(_$controller_){
+                    $controller = _$controller_;
+                }));
+
+                describe('sum', function () {
+                    it('1 + 1 should equal 2', function () {
+                        var CC = {};
+                        var controller = $controller('CalculatorController', { $scope: CC });
+                        CC.value1 = 1;
+                        CC.value2 = 1;
+                        CC.sum(CC.value1, CC.value2);
+                        expect(CC.sum).toBe(2);
+                    });	
+                });
+
+                describe('Rpn', function () {
+                    it('1,2,+ should equal 3', function () {
+                        var CC = {};
+                        var controller = $controller('CalculatorController', { $scope: CC});
+                        CC.val = CC.rpn('1,2,+');
+                        expect(CC.val[0]).toBe(3);
+                    });	
+                    it('1,2,3,+,- should equal -4', function () {
+                        var CC = {};
+                        var controller = $controller('CalculatorController', { $scope: CC});
+                        CC.val = CC.rpn('1,2,3,+,-');
+                        expect(CC.val[0]).toBe(-4);
+                    });	
+                    it('6,2,*,3,/ should equal 4', function () {
+                        var CC = {};
+                        var controller = $controller('CalculatorController', { $scope: CC});
+                        CC.val = CC.rpn('6,2,*,3,/');
+                        expect(CC.val[0]).toBe(4);
+                    });	
+                });
+
+    });
+
+    // describe('calculator', function () {
+        //     describe('sum', function() {
+        //         it('1 + 1 should equal 2', function() {
+        //             expect(calculator.sum(1, 1)).toBe(2);
+        //         });
+        //     })
+        //     describe('divide', function() {
+        //         it('zero divisor should equal 0', function() {
+        //             expect(calculator.divide(10, 0)).toBe(0);
+        //         });
+        //         it('2 / 1 should equal 2', function() {
+        //             expect(calculator.divide(2, 1)).toBe(2);
+        //         });
+        //         it('1 / 2 should equal 0.5', function() {
+        //             expect(calculator.divide(1, 2)).toBe(0.5);
+        //         });
+        //     })
+            
+        // });
+
+
+	</script>
+</html>
